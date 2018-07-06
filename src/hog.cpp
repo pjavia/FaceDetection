@@ -1,5 +1,5 @@
 //
-// Created by peri on 11/29/17.
+// Created by peri
 //
 
 #include "../header/hog.hpp"
@@ -29,7 +29,7 @@ void HoG::feature(cv::Mat &img, size_t patch, size_t block_size) {
     Patch patch_maker;
     std::vector<std::tuple<int, int, size_t, size_t>*> bunch;
     patch_maker.patch_creation(img, patch, patch, int(patch), bunch);
-    std::cout << bunch.size() << "Total number of patches in image" << std::endl;
+    //std::cout << bunch.size() << "Total number of patches in image" << std::endl;
     for (int i=0; i<bunch.size(); i++) {
         cv::Rect roi(std::get<0>(*bunch[i]), std::get<1>(*bunch[i]), std::get<2>(*bunch[i]), std::get<3>(*bunch[i]));
         cv::Mat work_img(img, roi);
@@ -51,6 +51,11 @@ void HoG::create_histogram(cv::Mat& img, cv::Mat& mag, cv::Mat& angle, size_t bl
 
     // Here img is just a patch;
     // As the training set has 32*32 size images we will use 4*4 for block and 8*8 for normalization
+    //std::string winName= "Patch mag";
+    //cv::namedWindow(winName);
+    //cv::imshow(winName, mag);
+    //cv::waitKey(0);
+    //cv::destroyAllWindows();
     Patch patch_maker;
     std::vector<std::tuple<int, int, size_t, size_t>*> bunch;
     std::vector<float>* normalized_container[img.rows/block_size][img.cols/block_size];
@@ -62,6 +67,11 @@ void HoG::create_histogram(cv::Mat& img, cv::Mat& mag, cv::Mat& angle, size_t bl
         cv::Mat work_img(img, roi);
         cv::Mat work_mag(mag, roi);
         cv::Mat work_angle(angle, roi);
+        //std::string win_Name= "block";
+        //cv::namedWindow(win_Name);
+        //cv::imshow(win_Name, work_angle);
+        //cv::waitKey(0);
+        //cv::destroyAllWindows();
         //cv::Size s = work_angle.size();
         //int rows = s.height;
         //int cols = s.width;
@@ -236,4 +246,67 @@ void HoG::create_histogram(cv::Mat& img, cv::Mat& mag, cv::Mat& angle, size_t bl
         }
 
     }
+}
+
+
+void HoG::GammaCorrection(cv::Mat& src, cv::Mat& dst, float fGamma)
+
+{
+
+    unsigned char lut[256];
+
+    for (int i = 0; i < 256; i++)
+
+    {
+
+        lut[i] = cv::saturate_cast<uchar>(pow((float)(i / 255.0), fGamma) * 255.0f);
+
+    }
+
+    dst = src.clone();
+
+    const int channels = dst.channels();
+
+    switch (channels)
+
+    {
+
+        case 1:
+
+        {
+
+            cv::MatIterator_<uchar> it, end;
+
+            for (it = dst.begin<uchar>(), end = dst.end<uchar>(); it != end; it++)
+
+                *it = lut[(*it)];
+
+            break;
+
+        }
+
+        case 3:
+
+        {
+
+            cv::MatIterator_<cv::Vec3b> it, end;
+
+            for (it = dst.begin<cv::Vec3b>(), end = dst.end<cv::Vec3b>(); it != end; it++)
+
+            {
+
+                (*it)[0] = lut[((*it)[0])];
+
+                (*it)[1] = lut[((*it)[1])];
+
+                (*it)[2] = lut[((*it)[2])];
+
+            }
+
+            break;
+
+        }
+
+    }
+
 }

@@ -1,5 +1,5 @@
 //
-// Created by peri on 11/29/17.
+// Created by peri
 //
 
 #ifndef FACEDETECTION_HOG_HPP
@@ -26,6 +26,9 @@ public:
     void feature(cv::Mat& img, size_t patch, size_t block_size);
 
     void create_histogram(cv::Mat& img, cv::Mat& mag, cv::Mat& angle, size_t block_size);
+
+public:
+    void GammaCorrection(cv::Mat& src, cv::Mat& dst, float fGamma);
 
 };
 

@@ -1,5 +1,5 @@
 //
-// Created by peri on 7/4/18.
+// Created by peri
 //
 
 #ifndef FACEDETECTION_PATCH_HPP
